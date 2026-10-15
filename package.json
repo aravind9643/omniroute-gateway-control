@@ -1,0 +1,597 @@
+{
+  "name": "omniroute-gateway-control",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.1.0",
+  "publisher": "AravindMerugu",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1f1f2e",
+    "theme": "dark"
+  },
+  "l10n": "./l10n",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AravindMerugu/omniroute-gateway-control.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AravindMerugu/omniroute-gateway-control/issues"
+  },
+  "homepage": "https://github.com/AravindMerugu/omniroute-gateway-control#readme",
+  "engines": {
+    "vscode": "^1.140.0"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "omniroute",
+    "ai-gateway",
+    "gateway",
+    "dashboard",
+    "quota",
+    "llm",
+    "copilot",
+    "mcp",
+    "combos"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run typecheck && npm run bundle",
+    "compile": "tsc -p ./",
+    "bundle": "npm run bundle:ext && npm run bundle:webview",
+    "bundle:ext": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --external:vscode --outfile=dist/extension.js --minify --sourcemap",
+    "bundle:webview": "esbuild src/webview/dashboard.ts --bundle --platform=browser --format=iife --target=es2022 --outfile=media/dashboard.js",
+    "typecheck": "tsc -p ./ --noEmit && tsc -p tsconfig.webview.json",
+    "test": "npm run typecheck && npm run compile && npm run bundle:webview && node test/unit.test.js && node test/dashboard.test.js",
+    "test:integration": "npm run compile && npm run bundle && vscode-test",
+    "screenshots": "npm run bundle:webview && node test/visual/screenshots.js",
+    "mock": "node test/mockServer.js",
+    "l10n:export": "vscode-l10n-dev export -o ./l10n ./src",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.6.4",
+    "@vscode/l10n-dev": "^0.0.35",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "^24.1.3",
+    "mocha": "^11.1.0",
+    "playwright": "^1.64.0",
+    "typescript": "^5.4.5"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "omniroute.openDashboard",
+        "title": "%command.openDashboard%",
+        "category": "OmniRoute",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "omniroute.openWebDashboard",
+        "title": "%command.openWebDashboard%",
+        "category": "OmniRoute",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "omniroute.refresh",
+        "title": "%command.refresh%",
+        "category": "OmniRoute",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "omniroute.startServer",
+        "title": "%command.startServer%",
+        "category": "OmniRoute",
+        "icon": "$(play)"
+      },
+      {
+        "command": "omniroute.stopServer",
+        "title": "%command.stopServer%",
+        "category": "OmniRoute",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "omniroute.restartServer",
+        "title": "%command.restartServer%",
+        "category": "OmniRoute",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "omniroute.showServerTerminal",
+        "title": "%command.showServerTerminal%",
+        "category": "OmniRoute",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "omniroute.signIn",
+        "title": "%command.signIn%",
+        "category": "OmniRoute",
+        "icon": "$(sign-in)"
+      },
+      {
+        "command": "omniroute.signOut",
+        "title": "%command.signOut%",
+        "category": "OmniRoute",
+        "icon": "$(sign-out)"
+      },
+      {
+        "command": "omniroute.setApiKey",
+        "title": "%command.setApiKey%",
+        "category": "OmniRoute",
+        "icon": "$(key)"
+      },
+      {
+        "command": "omniroute.setManagementKey",
+        "title": "%command.setManagementKey%",
+        "category": "OmniRoute",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "omniroute.createApiKey",
+        "title": "%command.createApiKey%",
+        "category": "OmniRoute",
+        "icon": "$(add)"
+      },
+      {
+        "command": "omniroute.selectModels",
+        "title": "%command.selectModels%",
+        "category": "OmniRoute",
+        "icon": "$(copilot)"
+      },
+      {
+        "command": "omniroute.toggleCopilotModel",
+        "title": "%command.toggleCopilotModel%",
+        "category": "OmniRoute",
+        "icon": "$(copilot)"
+      },
+      {
+        "command": "omniroute.copyBaseUrl",
+        "title": "%command.copyBaseUrl%",
+        "category": "OmniRoute",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "omniroute.copyModelId",
+        "title": "%command.copyModelId%",
+        "category": "OmniRoute",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "omniroute.configureCli",
+        "title": "%command.configureCli%",
+        "category": "OmniRoute",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "omniroute.runCli",
+        "title": "%command.runCli%",
+        "category": "OmniRoute",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "omniroute.createCombo",
+        "title": "%command.createCombo%",
+        "category": "OmniRoute",
+        "icon": "$(add)"
+      },
+      {
+        "command": "omniroute.deleteCombo",
+        "title": "%command.deleteCombo%",
+        "category": "OmniRoute",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "omniroute.toggleCombo",
+        "title": "%command.toggleCombo%",
+        "category": "OmniRoute",
+        "icon": "$(circle-slash)"
+      },
+      {
+        "command": "omniroute.testProvider",
+        "title": "%command.testProvider%",
+        "category": "OmniRoute",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "omniroute.toggleProvider",
+        "title": "%command.toggleProvider%",
+        "category": "OmniRoute",
+        "icon": "$(circle-slash)"
+      },
+      {
+        "command": "omniroute.deleteApiKey",
+        "title": "%command.deleteApiKey%",
+        "category": "OmniRoute",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "omniroute.clearCache",
+        "title": "%command.clearCache%",
+        "category": "OmniRoute",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "omniroute.resetBreakers",
+        "title": "%command.resetBreakers%",
+        "category": "OmniRoute",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "omniroute.clearCooldowns",
+        "title": "%command.clearCooldowns%",
+        "category": "OmniRoute",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "omniroute.setCompression",
+        "title": "%command.setCompression%",
+        "category": "OmniRoute",
+        "icon": "$(fold)"
+      },
+      {
+        "command": "omniroute.showLastRouting",
+        "title": "%command.showLastRouting%",
+        "category": "OmniRoute",
+        "icon": "$(info)"
+      },
+      {
+        "command": "omniroute.showLogs",
+        "title": "%command.showLogs%",
+        "category": "OmniRoute",
+        "icon": "$(output)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "omniroute",
+          "title": "%view.container%",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "omniroute": [
+        {
+          "id": "omniroute.explorer",
+          "name": "%view.explorer%",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "omniroute.explorer",
+        "contents": "%welcome.offline%",
+        "when": "omniroute.state == offline"
+      },
+      {
+        "view": "omniroute.explorer",
+        "contents": "%welcome.needsKey%",
+        "when": "omniroute.state == needsKey"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "omniroute.openDashboard",
+          "when": "view == omniroute.explorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "omniroute.selectModels",
+          "when": "view == omniroute.explorer",
+          "group": "navigation@2"
+        },
+        {
+          "command": "omniroute.refresh",
+          "when": "view == omniroute.explorer",
+          "group": "navigation@3"
+        },
+        {
+          "command": "omniroute.startServer",
+          "when": "view == omniroute.explorer && omniroute.state == offline",
+          "group": "1_server@1"
+        },
+        {
+          "command": "omniroute.restartServer",
+          "when": "view == omniroute.explorer && omniroute.state != offline",
+          "group": "1_server@2"
+        },
+        {
+          "command": "omniroute.stopServer",
+          "when": "view == omniroute.explorer && omniroute.state != offline",
+          "group": "1_server@3"
+        },
+        {
+          "command": "omniroute.openWebDashboard",
+          "when": "view == omniroute.explorer",
+          "group": "2_open"
+        },
+        {
+          "command": "omniroute.signIn",
+          "when": "view == omniroute.explorer",
+          "group": "3_auth@1"
+        },
+        {
+          "command": "omniroute.setApiKey",
+          "when": "view == omniroute.explorer",
+          "group": "3_auth@2"
+        },
+        {
+          "command": "omniroute.runCli",
+          "when": "view == omniroute.explorer",
+          "group": "4_cli@1"
+        },
+        {
+          "command": "omniroute.configureCli",
+          "when": "view == omniroute.explorer",
+          "group": "4_cli@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "omniroute.toggleCopilotModel",
+          "when": "view == omniroute.explorer && viewItem == model",
+          "group": "inline"
+        },
+        {
+          "command": "omniroute.copyModelId",
+          "when": "view == omniroute.explorer && viewItem =~ /^(model|combo|copilotEntry)/",
+          "group": "1_copy"
+        },
+        {
+          "command": "omniroute.toggleCombo",
+          "when": "view == omniroute.explorer && viewItem =~ /^combo/",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "omniroute.deleteCombo",
+          "when": "view == omniroute.explorer && viewItem =~ /^combo/",
+          "group": "2_edit@2"
+        },
+        {
+          "command": "omniroute.createCombo",
+          "when": "view == omniroute.explorer && viewItem == group.combos",
+          "group": "inline"
+        },
+        {
+          "command": "omniroute.testProvider",
+          "when": "view == omniroute.explorer && viewItem =~ /^connection/",
+          "group": "inline"
+        },
+        {
+          "command": "omniroute.toggleProvider",
+          "when": "view == omniroute.explorer && viewItem =~ /^connection/",
+          "group": "2_edit"
+        },
+        {
+          "command": "omniroute.createApiKey",
+          "when": "view == omniroute.explorer && viewItem == group.keys",
+          "group": "inline"
+        },
+        {
+          "command": "omniroute.deleteApiKey",
+          "when": "view == omniroute.explorer && viewItem == apiKey",
+          "group": "2_edit"
+        },
+        {
+          "command": "omniroute.startServer",
+          "when": "view == omniroute.explorer && viewItem == server.offline",
+          "group": "inline"
+        },
+        {
+          "command": "omniroute.restartServer",
+          "when": "view == omniroute.explorer && viewItem == server.online",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "omniroute.toggleCopilotModel",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.copyModelId",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.toggleCombo",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.deleteCombo",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.testProvider",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.toggleProvider",
+          "when": "false"
+        },
+        {
+          "command": "omniroute.deleteApiKey",
+          "when": "false"
+        }
+      ]
+    },
+    "languageModelChatProviders": [
+      {
+        "vendor": "omniroute",
+        "displayName": "OmniRoute"
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "omniroute.mcp",
+        "label": "OmniRoute"
+      }
+    ],
+    "configuration": {
+      "title": "OmniRoute",
+      "properties": {
+        "omniroute.baseUrl": {
+          "type": "string",
+          "default": "http://localhost:20128",
+          "order": 0,
+          "markdownDescription": "%config.baseUrl%"
+        },
+        "omniroute.pollIntervalSeconds": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 600,
+          "order": 1,
+          "description": "%config.pollIntervalSeconds%"
+        },
+        "omniroute.requestTimeoutSeconds": {
+          "type": "number",
+          "default": 15,
+          "minimum": 2,
+          "maximum": 120,
+          "order": 2,
+          "description": "%config.requestTimeoutSeconds%"
+        },
+        "omniroute.server.launchMode": {
+          "type": "string",
+          "enum": [
+            "npx",
+            "global",
+            "docker",
+            "custom"
+          ],
+          "default": "npx",
+          "order": 10,
+          "description": "%config.server.launchMode%"
+        },
+        "omniroute.server.customCommand": {
+          "type": "string",
+          "default": "",
+          "order": 11,
+          "description": "%config.server.customCommand%"
+        },
+        "omniroute.server.port": {
+          "type": "number",
+          "default": 20128,
+          "order": 12,
+          "description": "%config.server.port%"
+        },
+        "omniroute.server.dataDir": {
+          "type": "string",
+          "default": "",
+          "order": 13,
+          "description": "%config.server.dataDir%"
+        },
+        "omniroute.server.localhostOnly": {
+          "type": "boolean",
+          "default": true,
+          "order": 14,
+          "description": "%config.server.localhostOnly%"
+        },
+        "omniroute.server.autoStart": {
+          "type": "boolean",
+          "default": false,
+          "order": 15,
+          "description": "%config.server.autoStart%"
+        },
+        "omniroute.copilot.enabled": {
+          "type": "boolean",
+          "default": true,
+          "order": 20,
+          "description": "%config.copilot.enabled%"
+        },
+        "omniroute.copilot.includeAutoModels": {
+          "type": "boolean",
+          "default": true,
+          "order": 21,
+          "markdownDescription": "%config.copilot.includeAutoModels%"
+        },
+        "omniroute.copilot.includeCombos": {
+          "type": "boolean",
+          "default": true,
+          "order": 22,
+          "description": "%config.copilot.includeCombos%"
+        },
+        "omniroute.copilot.models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 23,
+          "markdownDescription": "%config.copilot.models%"
+        },
+        "omniroute.copilot.contextWindow": {
+          "type": "number",
+          "default": 128000,
+          "minimum": 4096,
+          "order": 24,
+          "description": "%config.copilot.contextWindow%"
+        },
+        "omniroute.chat.compression": {
+          "type": "string",
+          "enum": [
+            "server",
+            "off",
+            "lite",
+            "standard",
+            "aggressive",
+            "ultra",
+            "rtk",
+            "stacked"
+          ],
+          "default": "server",
+          "order": 30,
+          "markdownDescription": "%config.chat.compression%"
+        },
+        "omniroute.chat.bypassCache": {
+          "type": "boolean",
+          "default": false,
+          "order": 31,
+          "description": "%config.chat.bypassCache%"
+        },
+        "omniroute.chat.disableMemory": {
+          "type": "boolean",
+          "default": false,
+          "order": 32,
+          "description": "%config.chat.disableMemory%"
+        },
+        "omniroute.chat.showReasoning": {
+          "type": "boolean",
+          "default": true,
+          "order": 33,
+          "description": "%config.chat.showReasoning%"
+        },
+        "omniroute.chat.routingNotice": {
+          "type": "string",
+          "enum": [
+            "statusBar",
+            "off"
+          ],
+          "default": "statusBar",
+          "order": 34,
+          "description": "%config.chat.routingNotice%"
+        },
+        "omniroute.mcp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "order": 40,
+          "markdownDescription": "%config.mcp.enabled%"
+        }
+      }
+    }
+  }
+}

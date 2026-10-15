@@ -1,0 +1,6 @@
+# Normalize to LF in the repository so the Linux and Windows CI jobs see identical files.
+* text=auto eol=lf
+
+*.png binary
+*.ttf binary
+*.vsix binary

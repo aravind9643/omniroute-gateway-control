@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "type": "npm", "script": "bundle", "group": "build", "problemMatcher": [] },
+    {
+      "label": "mock server",
+      "type": "shell",
+      "command": "node test/mockServer.js 20129",
+      "isBackground": true,
+      "problemMatcher": { "pattern": { "regexp": "^x^" }, "background": { "activeBegins": true, "beginsPattern": ".", "endsPattern": "mock OmniRoute on" } }
+    },
+    { "label": "bundle + mock server", "dependsOn": ["npm: bundle", "mock server"], "problemMatcher": [] }
+  ]
+}
