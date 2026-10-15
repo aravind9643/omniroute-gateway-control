@@ -13,12 +13,12 @@
   "l10n": "./l10n",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AravindMerugu/omniroute-gateway-control.git"
+    "url": "https://github.com/aravind9643/omniroute-gateway-control.git"
   },
   "bugs": {
-    "url": "https://github.com/AravindMerugu/omniroute-gateway-control/issues"
+    "url": "https://github.com/aravind9643/omniroute-gateway-control/issues"
   },
-  "homepage": "https://github.com/AravindMerugu/omniroute-gateway-control#readme",
+  "homepage": "https://github.com/aravind9643/omniroute-gateway-control#readme",
   "engines": {
     "vscode": "^1.140.0"
   },
