@@ -70,6 +70,7 @@ npm test                  # typecheck (strict) + unit + dashboard tests
 npm run test:integration  # real VS Code (downloads into .vscode-test/)
 npm run screenshots       # look at test/visual/out after UI changes; --readme refreshes media/screenshots
 npm run l10n:export       # after changing vscode.l10n.t strings
+npm run install:insiders  # build a VSIX and sideload it into Insiders (--stable, --keep); F5 is better for iterating
 npx vsce package --no-dependencies
 ```
 

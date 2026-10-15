@@ -94,6 +94,16 @@ npm test                  # typecheck + unit tests (client vs. mock gateway) + d
 npm run test:integration  # real VS Code, against test/mockServer.js
 npm run screenshots       # dashboard in dark/light/high contrast → test/visual/out
 npm run mock              # mock gateway on :20129 — API key sk-omni-test, admin key sk-omni-admin, password "admin"
+
+npm run install:insiders  # build a VSIX and sideload it into VS Code Insiders, then reload the window
+npm run install:stable    # the same, for VS Code Stable
 ```
+
+`install:insiders` is also a task — **Run Task → install into VS Code Insiders**. Add `-- --keep` to leave
+the `.vsix` behind. It needs `code-insiders` (or `code`) on your PATH; if it is missing, run
+**Shell Command: Install 'code-insiders' command in PATH** from the command palette.
+
+For day-to-day work press **F5** instead: that launches an Extension Development Host on your working
+tree with no packaging step.
 
 The extension is not affiliated with the OmniRoute project. OmniRoute is MIT-licensed by its authors.

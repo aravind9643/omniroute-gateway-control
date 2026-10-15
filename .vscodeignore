@@ -5,6 +5,7 @@
 src/**
 out/**
 test/**
+scripts/**
 dist/**/*.map
 node_modules/**
 tsconfig*.json
@@ -13,3 +14,4 @@ CLAUDE.md
 media/screenshots/**
 *.vsix
 .gitignore
+.gitattributes

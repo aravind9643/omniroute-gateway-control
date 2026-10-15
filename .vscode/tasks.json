@@ -9,6 +9,13 @@
       "isBackground": true,
       "problemMatcher": { "pattern": { "regexp": "^x^" }, "background": { "activeBegins": true, "beginsPattern": ".", "endsPattern": "mock OmniRoute on" } }
     },
-    { "label": "bundle + mock server", "dependsOn": ["npm: bundle", "mock server"], "problemMatcher": [] }
+    { "label": "bundle + mock server", "dependsOn": ["npm: bundle", "mock server"], "problemMatcher": [] },
+    {
+      "label": "install into VS Code Insiders",
+      "type": "npm",
+      "script": "install:insiders",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+    }
   ]
 }

@@ -54,7 +54,9 @@
     "screenshots": "npm run bundle:webview && node test/visual/screenshots.js",
     "mock": "node test/mockServer.js",
     "l10n:export": "vscode-l10n-dev export -o ./l10n ./src",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies",
+    "install:insiders": "node scripts/install-local.js",
+    "install:stable": "node scripts/install-local.js --stable"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
