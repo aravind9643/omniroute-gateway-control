@@ -173,12 +173,22 @@ export class Store implements vscode.Disposable {
   recordRouting(rec: RoutingRecord) {
     this._snap.routing = [rec, ...this._snap.routing].slice(0, MAX_ROUTING);
     this._fire();
-    if (!rec.correlationId || !this._snap.canManage || (rec.provider && rec.costUsd !== undefined)) return;
-    // The call log row is written when the stream completes; give the server a moment.
-    setTimeout(async () => {
+    if (!rec.correlationId || (rec.provider && rec.costUsd !== undefined)) return;
+    void this._enrich(rec);
+  }
+
+  /**
+   * Fills a routing record in from the call log. The row is written as the stream finishes, so it
+   * may not be queryable yet; retry a few times with backoff rather than giving up on the first miss.
+   * `canManage` is re-checked per attempt because a refresh may still be settling it.
+   */
+  private async _enrich(rec: RoutingRecord, delays = [600, 1200, 2500, 5000]) {
+    for (const delay of delays) {
+      await new Promise((r) => setTimeout(r, delay));
+      if (!this._snap.canManage) continue;
       try {
         const [row] = await this.client.callLogs({ correlationId: rec.correlationId, limit: 1 });
-        if (!row) return;
+        if (!row) continue;
         Object.assign(rec, {
           provider: rec.provider || row.provider,
           served: row.model || rec.served,
@@ -189,10 +199,11 @@ export class Store implements vscode.Disposable {
           tokensOut: rec.tokensOut ?? row.tokensOut,
         });
         this._fire();
+        return;
       } catch (err) {
         this._log.debug(`[store] call-log lookup failed: ${(err as Error).message}`);
       }
-    }, 600);
+    }
   }
 
   dispose() {
