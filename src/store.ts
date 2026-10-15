@@ -15,6 +15,11 @@ export class Store implements vscode.Disposable {
   private _inflight: Promise<void> | undefined;
   private _queued = false;
   private readonly _subs: vscode.Disposable[] = [];
+  /**
+   * Owned by the Store, not by a snapshot: a refresh awaits a dozen requests before committing, and
+   * a chat finishing in that window would otherwise be dropped when the new snapshot lands.
+   */
+  private _routing: RoutingRecord[] = [];
 
   constructor(readonly client: OmniClient, private readonly _auth: AuthStore, private readonly _log: vscode.LogOutputChannel) {
     this._snap = this._empty();
@@ -34,7 +39,7 @@ export class Store implements vscode.Disposable {
   private _empty(): Snapshot {
     return {
       state: "offline", baseUrl: this.client.baseUrl, canManage: false, auth: { hasApiKey: false, hasManagementKey: false, signedIn: false },
-      models: [], combos: [], connections: [], keys: [], cooldowns: [], recentCalls: [], routing: this._snap?.routing ?? [],
+      models: [], combos: [], connections: [], keys: [], cooldowns: [], recentCalls: [], routing: this._routing,
     };
   }
 
@@ -72,7 +77,7 @@ export class Store implements vscode.Disposable {
   }
 
   private async _refresh() {
-    const next: Snapshot = { ...this._empty(), routing: this._snap.routing, auth: await this._auth.status() };
+    const next: Snapshot = { ...this._empty(), auth: await this._auth.status() };
     if (!(await this.client.ping())) {
       next.error = `No response from ${this.client.baseUrl}`;
       return this._commit(next);
@@ -135,6 +140,8 @@ export class Store implements vscode.Disposable {
 
   private _commit(next: Snapshot) {
     next.refreshedAt = Date.now();
+    // Re-read: a chat may have finished while this refresh was in flight.
+    next.routing = this._routing;
     this._snap = next;
     void vscode.commands.executeCommand("setContext", "omniroute.state", next.state);
     void vscode.commands.executeCommand("setContext", "omniroute.canManage", next.canManage);
@@ -171,7 +178,8 @@ export class Store implements vscode.Disposable {
 
   /** Records a finished Copilot request; enriches it from the call log when management access is available. */
   recordRouting(rec: RoutingRecord) {
-    this._snap.routing = [rec, ...this._snap.routing].slice(0, MAX_ROUTING);
+    this._routing = [rec, ...this._routing].slice(0, MAX_ROUTING);
+    this._snap.routing = this._routing;
     this._fire();
     if (!rec.correlationId || (rec.provider && rec.costUsd !== undefined)) return;
     void this._enrich(rec);

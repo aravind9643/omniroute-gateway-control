@@ -78,8 +78,13 @@ suite("Gateway Control for OmniRoute", function () {
     assert.strictEqual(last.headers["x-omniroute-compression"], "rtk");
     assert.ok(last.headers["x-omniroute-session-id"].startsWith("vscode-"));
 
+    // Refreshes keep firing (the poll timer) while enrichment is pending; the record must survive them.
+    const racing = setInterval(() => void api.test.store.refresh(), 150);
     // The call log lookup fills in the provider for the status bar / recent requests.
-    const rec = await waitFor(() => api.test.store.snapshot.routing.find((r) => r.requested === "auto/coding" && r.provider), "routing record enriched from call logs");
+    const rec = await waitFor(
+      () => api.test.store.snapshot.routing.find((r) => r.requested === "auto/coding" && r.provider),
+      "routing record enriched from call logs"
+    ).finally(() => clearInterval(racing));
     assert.strictEqual(rec.served, "anthropic/claude-sonnet-5-5");
     assert.strictEqual(rec.comboName, "auto/coding");
   });
